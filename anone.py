@@ -15,14 +15,12 @@ FSR_IP = "172.21.113.202"
 
 
 # Creating an object + Setting the threshold of logger to DEBUG
-logging.basicConfig(filename="log.log", 
-                    format='%(asctime)s %(message)s', 
-                    filemode='w')
+logging.basicConfig(format='%(asctime)s - %(message)s', level=logging.INFO)
 logger=logging.getLogger() 
 logger.setLevel(logging.DEBUG) 
 
 # Connect to websocket
-logger.info('CONNECTING...')
+logger.info('CONNECTING TO ' + FSR_IP + ' ...')
 ws = create_connection("ws://" + FSR_IP + "/fcsnonreconizedresult")
 logger.info("Connect successfully !!!")
 
