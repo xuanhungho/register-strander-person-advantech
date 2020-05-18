@@ -29,8 +29,7 @@ headers = {'Content-Type': "application/json"}
 res = requests.post("http://" + FSR_IP + ":80/users/login", 
                     json = {"username": "Admin", "password": "123456"}, 
                     headers=headers)
-res_json = res.json()
-logger.debug("login status: " + str(res) + str(res_json))
+logger.debug("login status: " + str(res) + str(res.json()))
 
 # receive data
 while True:
@@ -52,7 +51,7 @@ while True:
             encoded_string = base64.b64encode(image_file.read())
             UUID = str(uuid.uuid1())
             data = {
-                "session_id": res_json["sessionId"],
+                "session_id": res.json()["sessionId"],
                 "person_info": {
                     "fullname": UUID,
                     "employeeno": UUID,
