@@ -1,0 +1,1 @@
+# register-strander-person-advantech
