@@ -15,7 +15,7 @@ import logging
 FRS_IP = "172.21.113.202"
 USERNAME = "Admin"
 PASSWORD = "123456"
-REGISTER_PER_FRAME = 8
+REGISTER_PER_FRAME = 15
 
 # Creating an object + Setting the threshold of logger to DEBUG
 logging.basicConfig(format='%(asctime)s - %(message)s', level=logging.INFO)
@@ -82,7 +82,6 @@ while True:
                 }
                 
                 res2 = requests.post("http://" + FRS_IP + ":80/frs/cgi/createperson", json = data, headers=headers)
-                
                 if res2.status_code == 200:
                     logger.debug(" --- REGISTER SUCCESSFULLY: " + UUID + "!!!!")
                 else:
