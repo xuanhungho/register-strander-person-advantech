@@ -38,59 +38,63 @@ logger.debug("Login status " + str(res.status_code) + ": " + str(res.json()))
 count_frame = -1
 while True:
     logger.info("Receiving data ...")
-    result =  ws.recv()
     try:
-        # show stranger person
-        json_result = json.loads(result)
-        img_name = "image=" + json_result["snapshot"]
-        logger.info("Received: snapshot - " + img_name)
-        count_frame += 1
-    
-        # Every 10 frame
-        if count_frame % REGISTER_PER_FRAME == 0:
-            filename = wget.download("http://" + FRS_IP + "/persons/snapshotimage/" + img_name)
-            img = cv2.imread(img_name)
-            cv2.imshow("PROCCESSING...", img)
-            cv2.waitKey(1)
-            cv2.destroyAllWindows()
+        result =  ws.recv()
+        try:
+            # show stranger person
+            json_result = json.loads(result)
+            img_name = "image=" + json_result["snapshot"]
+            logger.info("Received: snapshot - " + img_name)
+            count_frame += 1
+        
+            # Every 10 frame
+            if count_frame % REGISTER_PER_FRAME == 0:
+                filename = wget.download("http://" + FRS_IP + "/persons/snapshotimage/" + img_name)
+                img = cv2.imread(img_name)
+                cv2.imshow("PROCCESSING...", img)
+                cv2.waitKey(1)
+                cv2.destroyAllWindows()
 
-            # stranger registration 
-            with open(img_name, "rb") as image_file:
-                encoded_string = base64.b64encode(image_file.read())
-                UUID = str(uuid.uuid1())
-                data = {
-                    "session_id": res.json()["sessionId"],
-                    "person_info": {
-                        "fullname": UUID,
-                        "employeeno": UUID,
-                        "cardno": UUID,
-                        "group_list": [
-                            {
-                                "id": "5ebc9dc8978c5f076be8c31e",
-                                "groupname": "Employee"
-                            }
-                        ],
-                        "department_list": [
-                            {
-                                "objectId": "N5Lr5E2OzD",
-                                "no": "",
-                                "name": "0001"
-                            }
-                        ]
-                    },
-                    "image": str(encoded_string.decode('utf-8'))
-                }
-                
-                res2 = requests.post("http://" + FRS_IP + ":80/frs/cgi/createperson", json = data, headers=headers)
-                if res2.status_code == 200:
-                    logger.debug(" --- REGISTER SUCCESSFULLY: " + UUID + "!!!!")
-                else:
-                    logger.debug(" --- REGISTER FAILED: " + str(res2.json()))
+                # stranger registration 
+                with open(img_name, "rb") as image_file:
+                    encoded_string = base64.b64encode(image_file.read())
+                    UUID = str(uuid.uuid1())
+                    data = {
+                        "session_id": res.json()["sessionId"],
+                        "person_info": {
+                            "fullname": UUID,
+                            "employeeno": UUID,
+                            "cardno": UUID,
+                            "group_list": [
+                                {
+                                    "id": "5ebc9dc8978c5f076be8c31e",
+                                    "groupname": "Employee"
+                                }
+                            ],
+                            "department_list": [
+                                {
+                                    "objectId": "N5Lr5E2OzD",
+                                    "no": "",
+                                    "name": "0001"
+                                }
+                            ]
+                        },
+                        "image": str(encoded_string.decode('utf-8'))
+                    }
+                    
+                    res2 = requests.post("http://" + FRS_IP + ":80/frs/cgi/createperson", json = data, headers=headers)
+                    if res2.status_code == 200:
+                        logger.debug(" --- REGISTER SUCCESSFULLY: " + UUID + "!!!!")
+                    else:
+                        logger.debug(" --- REGISTER FAILED: " + str(res2.json()))
 
-            # delete image after proccess
-            os.remove(img_name)
-            logger.debug("Deleted " + img_name)
+                # delete image after proccess
+                os.remove(img_name)
+                logger.debug("Deleted " + img_name)
+        except:
+            pass
     except:
-        pass
+        ws = create_connection("ws://" + FRS_IP + "/fcsnonreconizedresult")
+        time.sleep(30)
 
 ws.close()
