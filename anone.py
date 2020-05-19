@@ -94,7 +94,9 @@ while True:
         except:
             pass
     except:
-        ws = create_connection("ws://" + FRS_IP + "/fcsnonreconizedresult")
-        time.sleep(30)
+        try:
+            ws = create_connection("ws://" + FRS_IP + "/fcsnonreconizedresult")
+        except:
+            time.sleep(30)
 
 ws.close()
